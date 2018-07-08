@@ -1,0 +1,307 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"train",
+				"trainDF\tparam"
+			],
+			[
+				"fea",
+				"featureDf\tstatement"
+			],
+			[
+				"to",
+				"to_csv\tfunction"
+			],
+			[
+				"data",
+				"data_scaled\tstatement"
+			],
+			[
+				"re",
+				"reshape"
+			],
+			[
+				"dat",
+				"data_scaled\tstatement"
+			],
+			[
+				"val",
+				"values"
+			],
+			[
+				"if",
+				"ifmain\tif __name__ == '__main__'"
+			],
+			[
+				"pred",
+				"predict"
+			],
+			[
+				"pre",
+				"prepare\tfunction"
+			],
+			[
+				"hash",
+				"hashEventCase\tfunction"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				]
+			],
+			[
+				"Packages/Python/Python.sublime-build",
+				""
+			]
+		],
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				],
+				[
+					"Packages/User/Python2.sublime-build",
+					""
+				]
+			],
+			[
+				"Packages/User/Python2.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 374.0,
+		"last_filter": "Package",
+		"selected_items":
+		[
+			[
+				"Package",
+				"Package Control: Upgrade Package"
+			],
+			[
+				"Virt",
+				"Virtualenv: Activate"
+			],
+			[
+				"package control: insta",
+				"Package Control: Install Package"
+			],
+			[
+				"package control: list",
+				"Package Control: List Packages"
+			]
+		],
+		"width": 410.0
+	},
+	"console":
+	{
+		"height": 220.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '6f4c264a24d933ce70df5dedcf1dcaee' + 'ebe013ee18cced0ef93d5f746d80ef60'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/greghuang/Documents/Programming/dc_usage_analysis/soruce/pc_feature_extract.py",
+		"/Users/greghuang/Documents/Programming/dc_usage_analysis/soruce/ntf_feature_extract_01.py",
+		"/Users/greghuang/Documents/Programming/dc_usage_analysis/soruce/rf_training_all.py",
+		"/Users/greghuang/Documents/Programming/dc_usage_analysis/soruce/stat_feature_extract.py",
+		"/Users/greghuang/Documents/Programming/dc_usage_analysis/soruce/sw_onesvm_training.py",
+		"/Users/greghuang/Documents/Programming/dc_usage_analysis/soruce/sw_feature_extract.py",
+		"/Users/greghuang/Documents/Programming/dc_usage_analysis/soruce/sw_rf_training_01.py",
+		"/Users/greghuang/Documents/Programming/dc_usage_analysis/soruce/pc_rf_training.py",
+		"/Users/greghuang/Documents/Programming/dc_usage_analysis/soruce/visualize.py",
+		"/Users/greghuang/Documents/Programming/dc_usage_analysis/soruce/pc_rf_training_all.py",
+		"/Users/greghuang/Documents/Programming/dc_usage_analysis/soruce/sw_feature_extract_01.py",
+		"/Users/greghuang/Documents/Programming/dc_usage_analysis/soruce/sw_training_01.py",
+		"/Users/greghuang/Library/Application Support/Sublime Text 3/Packages/Anaconda/Anaconda.sublime-settings",
+		"/Users/greghuang/Library/Application Support/Sublime Text 3/Packages/User/Anaconda.sublime-settings",
+		"/Users/greghuang/Library/Application Support/Sublime Text 3/Packages/User/Python.sublime-settings",
+		"/Users/greghuang/Documents/Programming/dc_usage_analysis/soruce/training01.py",
+		"/Users/greghuang/Documents/Programming/Data_Competition/Data/TrainSet/Train_extracted_security_warning_feature_2018-01-17_14-13-13.csv",
+		"/Users/greghuang/Documents/Programming/keras_scikit_example/seaborn_example.py",
+		"/Users/greghuang/Documents/Programming/keras_scikit_example/KerasTest.py",
+		"/Users/greghuang/Downloads/extracted_parental_control_station_event_2017-12-27_11-01-49.csv",
+		"/Users/greghuang/Documents/Programming/Scikit_Keras/Keras_Sample.py",
+		"/Users/greghuang/Documents/Programming/MyCodilityTest/src/ElevatorStops.java",
+		"/Users/greghuang/Documents/Programming/Scikit_Keras/Hello_World.py",
+		"/Users/greghuang/Library/Application Support/Sublime Text 3/Packages/User/Virtualenv.sublime-settings",
+		"/Users/greghuang/Documents/Programming/MyCodilityTest/src/StringOcrMatch.java",
+		"/Users/greghuang/Library/Application Support/Sublime Text 3/Packages/Virtualenv/Virtualenv.sublime-settings",
+		"/Users/greghuang/Library/Application Support/Sublime Text 3/Packages/User/Package Control.sublime-settings",
+		"/Users/greghuang/Documents/Programming/digitML/data/output/train1.txt",
+		"/Users/greghuang/Documents/Programming/digitML/data/train/training_60000.txt",
+		"/Users/greghuang/Documents/Programming/digitML/data/train/train_resample_20x20.txt",
+		"/Users/greghuang/Documents/Programming/digitML/data/train/train_pinch_edge_20x20.txt",
+		"/Users/greghuang/Documents/Programming/digitML/data/train/train_ripple_edge_20x20.txt",
+		"/Users/greghuang/Documents/Programming/digitML/data/train/train_spherizer_edge_20x20.txt",
+		"/Users/greghuang/Documents/Programming/digitML/data/train/train_twirl_sharp_20x20.txt",
+		"/Users/greghuang/Documents/Programming/digitML/data/train/train_zigzag_20_20.txt",
+		"/Users/greghuang/Documents/Programming/digitML/data/train/train_resample_20_20.txt",
+		"/Users/greghuang/Documents/Programming/digitML/data/mnist/train-labels.idx1-ubyte",
+		"/Users/greghuang/Documents/Programming/digitML/data/mnist/test.txt"
+	],
+	"find":
+	{
+		"height": 38.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 38.0
+	},
+	"input":
+	{
+		"height": 46.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 345.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "Packages/Python/Python.sublime-build",
+	"project": "README.sublime-project",
+	"replace":
+	{
+		"height": 72.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"~/Documents/Programming/keras_scikit_example/keras_scikit.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 327.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
