@@ -102,7 +102,7 @@ class PokerSocket(object):
 
     def takeAction(self,action, data):
         # Get number of players and table info
-        if action == "__show_action":
+        if action == "__show_action" or action=='__deal' :
             table = data['table']
             players = data['players']
             boards = table['board']
@@ -222,15 +222,6 @@ class PotOddsPokerBot(PokerBot):
         return [self.genCardFromId(card_id) for card_id in choiced]
 
     def get_win_prob(self,hand_cards, board_cards,simulation_number,num_players):
-        """Calculate the win probability from your board cards and hand cards by using simple Monte Carlo method.
-
-        Args:
-            board_cards: The board card list.
-            hand_cards: The hand card list
-
-        Examples:
-            >>> get_win_prob(["8H", "TS", "6C"], ["7D", "JC"])
-        """
         win = 0
         round=0
         evaluator = HandEvaluator()
@@ -373,15 +364,7 @@ class MontecarloPokerBot(PokerBot):
         return [self.genCardFromId(card_id) for card_id in choiced]
 
     def get_win_prob(self,hand_cards, board_cards,num_players):
-        """Calculate the win probability from your board cards and hand cards by using simple Monte Carlo method.
 
-        Args:
-            board_cards: The board card list.
-            hand_cards: The hand card list
-
-        Examples:
-            >>> get_win_prob(["8H", "TS", "6C"], ["7D", "JC"])
-        """
         win = 0
         round=0
         evaluator = HandEvaluator()
@@ -439,12 +422,12 @@ if __name__ == '__main__':
         #myPokerBot=PotOddsPokerBot(preflop_threshold_Loose,passive_threshold,bet_tolerance)
         #myPokerBot=PotOddsPokerBot(preflop_threshold_Tight,passive_threshold,bet_tolerance)
 
-        playerName="p1"
+        playerName="eric"
         connect_url="ws://iskf.org:80/"
         simulation_number=100
         bet_tolerance=0.1
         #myPokerBot=FreshPokerBot()
-        myPokerBot=MontecarloPokerBot(simulation_number)
-        #myPokerBot=PotOddsPokerBot(preflop_threshold_Tight,aggresive_threshold,bet_tolerance)
+        #myPokerBot=MontecarloPokerBot(simulation_number)
+        myPokerBot=PotOddsPokerBot(preflop_threshold_Tight,aggresive_threshold,bet_tolerance)
         myPokerSocket=PokerSocket(playerName,connect_url,myPokerBot)
         myPokerSocket.doListen()
