@@ -1,48 +1,19 @@
 from pokereval.card import Card
+from action import Action
+from card import getCard
 import websockets
 import json
 import asyncio
 
-"""Create a card. Rank is 2-14, representing 2-A,
-   while suit is 1-4 representing spades, hearts, diamonds, clubs"""
-def getCard(card):
-	cardnume_code = card[0]
-	card_type = card[1]
-	
-	card_num = 0
-	card_num_type = 0
-	
-	if card_type == 'S':
-		card_num_type = 1
-	elif card_type == 'H':
-		card_num_type = 2
-	elif card_type == 'D':
-		card_num_type = 3
-	elif card_type == "C":
-		card_num_type = 4
-	else:
-		raise NameError(card_type + " is not defined")
-	
-	if cardnume_code == 'T':
-		card_num = 10
-	elif cardnume_code == 'J':
-		card_num = 11
-	elif cardnume_code == 'Q':
-		card_num = 12
-	elif cardnume_code == 'K':
-		card_num = 13
-	elif cardnume_code == 'A':
-		card_num = 14
-	else:
-		card_num = int(cardnume_code)
-	return Card(card_num, card_num_type)
-
 class PokerBot(object):
-	def declareAction(self,hole, board, round, my_Raise_Bet, my_Call_Bet,Table_Bet,number_players,raise_count,bet_count,my_Chips,total_bet):
-		err_msg = self.__build_err_msg("declare_action")
+	def declareAction(self, hands, board, round, my_raise_bet, my_call_bet,table_bet, number_players, raise_count, bet_count, my_chips, total_bet):
+		err_msg = self.__build_err_msg("declare action")
 		raise NotImplementedError(err_msg)
-	def game_over(self,isWin,winChips,data):
-		err_msg = self.__build_err_msg("game_over")
+	def roundOver(self, data):
+		err_msg = self.__build_err_msg("round over")
+		raise NotImplementedError(err_msg)
+	def gameOver(self, isWin, winChips, data):
+		err_msg = self.__build_err_msg("game over")
 		raise NotImplementedError(err_msg)
 
 class PokerSocket(object):
@@ -86,6 +57,7 @@ class PokerSocket(object):
 		self.total_round = data['table']['roundCount']
 		self.round_name = data['table']['roundName']
 		players = data['players']
+		self.number_players = len(players)
 		for player in (players):
 			print("Player:{}".format(player['playerName']))
 			print("Is Human:{}".format(player['isHuman']))
@@ -157,35 +129,34 @@ class PokerSocket(object):
 		return action, amount
 
 	async def takeAction(self, ws, event, data):
-		# Get number of players and table info
 		if event == "__new_round":
 			self.initRound(data)
 		elif event == "__action":
 			self.initAction(data)
 			action, amount = self.getAction(data)
-			print("action: {}".format(action))
+			print("my action: {}".format(action))
 			print("action amount: {}".format(amount))
 			await ws.send(json.dumps({
                 "eventName": "__action",
                 "data": {
-                    "action": action,
+                    "action": action.value,
                     "playerName": self.player_name,
                     "amount": amount
                 }}))
+		# when each betting round end up, server will send this event
 		elif event =='__deal':
-			# when each betting round end up, server will send this event
-			print("Total bet:{}".format(data['table']['totalBet']))
+			print("Total round bet:{}\n".format(data['table']['totalBet']))
 		elif event == "__show_action":
 			self.showAction(data)
 		elif event == "__bet":
 			self.initAction(data)
 			action, amount = self.getAction(data)
-			print("action: {}".format(action))
+			print("my action: {}".format(action))
 			print("action amount: {}".format(amount))
 			await ws.send(json.dumps({
                 "eventName": "__action",
                 "data": {
-                    "action": action,
+                    "action": action.value,
                     "playerName": self.player_name,
                     "amount": amount
                 }}))
@@ -206,9 +177,9 @@ class PokerSocket(object):
 					winChips = winMoney
 					print("winPlayer:{}".format(isWin))
 					print("winChips:{}".format(winChips))
-					self.pokerbot.game_over(isWin,winChips,data)
+					self.pokerbot.gameOver(isWin,winChips,data)
 		elif event == "__game_over":
-			print("rejoin game")
+			print("Rejoin game")
 			ws.send(json.dumps({
 				"eventName": "__join",
 				"data": {
@@ -231,21 +202,24 @@ class PokerSocket(object):
 				msg = json.loads(message)
 				event_name = msg["eventName"]
 				data = msg["data"]
-				print("\n" + event_name)
+				# print("\n" + event_name)
 				await self.takeAction(ws, event_name, data)
 
-class FreshPokerBot(PokerBot):
-	def game_over(self, isWin, winChips, data):
+class DummyPokerBot(PokerBot):
+	def gameOver(self, isWin, winChips, data):
+		pass
+
+	def roundOver(self, data):
 		pass
 
 	def declareAction(self, hands, boards, round, my_raise_bet, my_call_bet, table_bet, number_players,raise_count, bet_count, my_chips, total_bet, min_bet):
-		action = 'call'
+		action = Action.Call
 		amount = min_bet
-		return action,amount
+		return action, amount
 
 if __name__ == '__main__':
 	playerName = "iamrobot"
 	connectURL = "ws://poker-training.vtr.trendnet.org:3001"
-	myPokerBot = FreshPokerBot()
+	myPokerBot = DummyPokerBot()
 	myPokerSocket = PokerSocket(playerName, connectURL, myPokerBot)
 	asyncio.get_event_loop().run_until_complete(myPokerSocket.doListen())
