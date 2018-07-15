@@ -26,6 +26,8 @@ class PokerBot(object):
 		raise NotImplementedError(err_msg)
 
 class DummyPokerBot(PokerBot):
+	total_games = 0
+	total_chips = 0
 	total_round = 0
 	raise_count = 0
 	bet_count = 0
@@ -98,7 +100,17 @@ class DummyPokerBot(PokerBot):
 		self.min_bet = data['self']['minBet']
 
 	def endGame(self, data):
-		pass
+		try:
+			players = data['players']
+			for player in (players):
+				name = player['playerName']				
+				if name == self.player_hashed_name:
+					self.total_games += 1
+					self.total_chips += player['chips']
+					print('Total games:{}'.format(self.total_games) + ' total chips:{}'.format(self.total_chips) + ' avg.chips:{}'.format(self.total_chips/self.total_games))
+		except Exception:
+			traceback.print_exc()
+			print(data)
 
 	def endRound(self, data):
 		try:

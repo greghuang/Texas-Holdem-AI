@@ -22,7 +22,7 @@ class PokerSocket(object):
 		amount = 0
 		if action == "bet" or action == "allin":
 			amount = data['action']['amount'] 
-		print("Round:{}".format(round))
+		print("[Round:{}]".format(round))
 		print("Player:{}".format(player) + " {}".format(action) + " {}\n".format(amount))
 
 	async def evtHandler(self, ws, event, data):
@@ -45,10 +45,10 @@ class PokerSocket(object):
 		elif event == "__show_action":
 			self.showAction(data)
 		elif event == "__round_end":
-			print("Round end")
+			print("[Round end]")
 			self.pokerbot.endRound(data)
 		elif event == "__game_over":
-			print("Game over")
+			print("[Game over]")
 			self.pokerbot.endGame(data)
 			if self.isRejoin:
 				print("=====>>> Rejoin game <<<=====")
@@ -84,13 +84,12 @@ class PokerSocket(object):
 		asyncio.get_event_loop().stop()
 
 
-
 def ask_exit():
 	for task in asyncio.Task.all_tasks():
 		task.cancel()
 
 if __name__ == '__main__':
-	playerName = "iamrobot2"
+	playerName = "iamrobot"
 	connectURL = "ws://poker-training.vtr.trendnet.org:3001"
 	myPokerBot = DummyPokerBot()
 	myPokerSocket = PokerSocket(playerName, connectURL, myPokerBot)
