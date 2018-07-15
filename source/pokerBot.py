@@ -1,6 +1,8 @@
 from pokereval.card import Card
 from card import getCard
 from action import Action
+import sys, traceback
+
 
 class PokerBot(object):
 	def initRound(self, data):
@@ -77,14 +79,15 @@ class DummyPokerBot(PokerBot):
 			print("my name:"+self.player_hashed_name)
 		
 		self.my_chips = data['self']['chips']
-		print("chips:{}".format(self.my_chips))
 		
-		print("round: {}".format(self.round_name))
+		print("Round: {}".format(self.round_name))
+		print("Chips:{}".format(self.my_chips))
+
 		if self.round_name == "Deal":
 			hands = data['self']['cards']
 			for card in hands:
 				self.hands.append(getCard(card))
-			print("hands:{}".format(self.hands))
+			print("Hands:{}".format(self.hands))
 
 		if self.round_name == "Flop":
 			boards = data['game']['board']
@@ -98,10 +101,25 @@ class DummyPokerBot(PokerBot):
 		pass
 
 	def endRound(self, data):
-		pass
+		try:
+			players = data['players']
+			for player in (players):
+				name = player['playerName']
+				isAlive = player['isSurvive']
+				if isAlive:
+					message = player['hand']['message']
+					if player['winMoney'] > 0:
+						print('{}'.format(name) + ' has {}'.format(message) + ' to win {}'.format(player['winMoney']))
+					else:
+						print('{}'.format(name) + ' has {}'.format(message))
+				else:
+					print("{}".format(name) + " out")
+		except Exception:
+			traceback.print_exc()
+			print(data)
 
 	def declareAction(self, data, isBet=False):
 		self.initAction(data)
-		action = Action.Call
+		action = Action.Allin
 		amount = self.min_bet
 		return action, amount
