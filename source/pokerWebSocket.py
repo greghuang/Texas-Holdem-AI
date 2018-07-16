@@ -22,7 +22,7 @@ class PokerSocket(object):
 		amount = 0
 		if action == "bet" or action == "allin":
 			amount = data['action']['amount'] 
-		print("[Stage:{}]".format(round))
+		print("[{}]".format(round))
 		print("Player:{}".format(player) + " {}".format(action) + " {}\n".format(amount))
 
 	async def evtHandler(self, ws, event, data):

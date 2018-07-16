@@ -34,6 +34,7 @@ class DummyPokerBot(PokerBot):
 	total_games = 0
 	total_chips = 0
 	total_round = 0
+	win_round = 0
 	raise_count = 0
 	bet_count = 0
 	my_chips = 0
@@ -70,7 +71,6 @@ class DummyPokerBot(PokerBot):
 		self.hands = []
 		self.stage = None
 		self.player_hashed_name = None
-		self.total_round = data['table']['roundCount']
 		self.round_name = data['table']['roundName']
 		players = data['players']
 		self.number_players = len(players)
@@ -119,12 +119,14 @@ class DummyPokerBot(PokerBot):
 					self.total_games += 1
 					self.total_chips += player['chips']
 					print('Total games:{}'.format(self.total_games) + ' total chips:{}'.format(self.total_chips) + ' avg.chips:{}'.format(self.total_chips/self.total_games))
+					print("Total rounds:%d, win rounds:%d, win rate:%f" %(self.total_round, self.win_round, float(self.win_round)/float(self.total_round)))
 		except Exception:
 			traceback.print_exc()
 			print(data)
 
 	def endRound(self, data):
 		try:
+			self.total_round += 1
 			players = data['players']
 			for player in (players):
 				name = player['playerName']
@@ -133,6 +135,8 @@ class DummyPokerBot(PokerBot):
 					message = player['hand']['message']
 					if player['winMoney'] > 0:
 						print('{}'.format(name) + ' has {}'.format(message) + ' to win {}'.format(player['winMoney']))
+						if name == self.player_hashed_name:
+							self.win_round += 1
 					else:
 						print('{}'.format(name) + ' has {}'.format(message))
 				else:
