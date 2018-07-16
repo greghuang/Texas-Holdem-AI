@@ -33,12 +33,12 @@ class PokerSocket(object):
 			print("action: {}".format(action))
 			print("action amount: {}\n".format(amount))
 			await ws.send(json.dumps({
-                "eventName": "__action",
-                "data": {
-                    "action": action.value,
-                    "playerName": self.player_name,
-                    "amount": amount
-                }}))
+				"eventName": "__action",
+				"data": {
+					"action": action.value,
+					"playerName": self.player_name,
+					"amount": amount
+				}}))
 		# when each betting round end up, server will send this event
 		elif event =='__deal':
 			print("Total round bet:{}\n".format(data['table']['totalBet']))
@@ -51,7 +51,7 @@ class PokerSocket(object):
 			print("[Game over]")
 			self.pokerbot.endGame(data)
 			if self.isRejoin:
-				print("=====>>> Rejoin game <<<=====")
+				print("===== Rejoin game =====")
 				await self.joinGame(ws)
 			else:
 				for task in asyncio.Task.all_tasks():
