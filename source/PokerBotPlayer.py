@@ -1,7 +1,7 @@
 #coding=UTF-8
-from pokereval.card import Card
+# from pokereval.card import Card
 #from deuces import Card, Evaluator
-from pokereval.hand_evaluator import HandEvaluator
+# from pokereval.hand_evaluator import HandEvaluator
 from websocket import create_connection
 import math
 import random

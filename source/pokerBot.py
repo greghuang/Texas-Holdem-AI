@@ -1,16 +1,18 @@
-from pokereval.card import Card
-from card import getCard
+# from pokereval.card import Card
+# from pokereval.hand_evaluator import HandEvaluator
+from treys import Card
 from action import Action
 import sys, traceback
 
+def getCard(card):
+	return Card.new(card[0] + card[1].lower())
 
+def showCard(cards):
+	Card.print_pretty_cards(cards)
+	
 class PokerBot(object):
 	def initRound(self, data):
 		err_msg = self.__build_err_msg("init round")
-		raise NotImplementedError(err_msg)
-
-	def initAction(self, data):
-		err_msg = self.__build_err_msg("init action")
 		raise NotImplementedError(err_msg)
 
 	def declareAction(self, data, isBet=False):
@@ -38,6 +40,7 @@ class DummyPokerBot(PokerBot):
 	my_raise_bet = 0
 	table_bet = 0
 	total_bet = 0
+	score = 0
 	board = []
 	hands = []
 	round_name = None
@@ -57,6 +60,7 @@ class DummyPokerBot(PokerBot):
 		self.min_bet = 0
 		self.table_bet = 0
 		self.total_bet = 0
+		self.score = 0
 		self.board = []
 		self.hands = []
 		self.player_hashed_name = None
@@ -89,13 +93,15 @@ class DummyPokerBot(PokerBot):
 			hands = data['self']['cards']
 			for card in hands:
 				self.hands.append(getCard(card))
-			print("Hands:{}".format(self.hands))
+			showCard(self.hands)
+			# score = HandEvaluator.evaluate_hand(hands, board)
 
 		if self.round_name == "Flop":
 			boards = data['game']['board']
 			for card in (boards):
 				self.board.append(getCard(card))
-			print("Board:{}".format(self.board))
+			showCard(self.board)
+			# score = HandEvaluator.evaluate_hand(hands, board)
 
 		self.min_bet = data['self']['minBet']
 
@@ -132,6 +138,7 @@ class DummyPokerBot(PokerBot):
 
 	def declareAction(self, data, isBet=False):
 		self.initAction(data)
+		print('score:{}'.format(self.score))
 		action = Action.Allin
 		amount = self.min_bet
 		return action, amount

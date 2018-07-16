@@ -38,7 +38,7 @@ class PokerSocket(object):
 					"action": action.value,
 					"playerName": self.player_name,
 					"amount": amount
-				}}))
+				}}))	
 		# when each betting round end up, server will send this event
 		elif event =='__deal':
 			print("Total round bet:{}\n".format(data['table']['totalBet']))
@@ -79,6 +79,14 @@ class PokerSocket(object):
 					await self.evtHandler(ws, event_name, data)
 			except asyncio.CancelledError:
 				print("disconnect websocket")
+			except asyncio.TimeoutError:
+				print('server timeout')
+				try:
+					pong_waiter = await ws.ping()
+					await asyncio.wait_for(pong_waiter, timeout=5)
+				except asyncio.TimeoutError:
+					# No response to ping in 5 seconds, disconnect.
+					ws.close()
 
 		print("Stop loop")
 		asyncio.get_event_loop().stop()
