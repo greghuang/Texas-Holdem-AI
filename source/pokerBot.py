@@ -1,7 +1,10 @@
 # from pokereval.card import Card
 # from pokereval.hand_evaluator import HandEvaluator
 from treys import Card
-from action import Action
+from treys import Evaluator
+from poker import Action
+from poker import Stage
+from poker import GetStage
 import sys, traceback
 
 def getCard(card):
@@ -40,12 +43,14 @@ class DummyPokerBot(PokerBot):
 	my_raise_bet = 0
 	table_bet = 0
 	total_bet = 0
-	score = 0
+	percentage = 0.0
 	board = []
 	hands = []
+	stage = None
 	round_name = None
 	player_name = None
 	player_hashed_name = None
+	evaluator = Evaluator()
 
 	def initRound(self, data):
 		print("\ninitialize round...\n")
@@ -60,9 +65,10 @@ class DummyPokerBot(PokerBot):
 		self.min_bet = 0
 		self.table_bet = 0
 		self.total_bet = 0
-		self.score = 0
+		self.percentage = 0.0
 		self.board = []
 		self.hands = []
+		self.stage = None
 		self.player_hashed_name = None
 		self.total_round = data['table']['roundCount']
 		self.round_name = data['table']['roundName']
@@ -78,32 +84,31 @@ class DummyPokerBot(PokerBot):
 		print("Small blind:{}".format(data['table']['smallBlind']['amount']))
 
 	def initAction(self, data):
-		self.round_name = data['game']['roundName']
+		round_name = data['game']['roundName']
 		
 		if self.player_hashed_name == None:
 			self.player_hashed_name = data['self']['playerName']
-			print("my name:"+self.player_hashed_name)
+			print("My name:"+self.player_hashed_name)
 		
 		self.my_chips = data['self']['chips']
-		
-		print("Round: {}".format(self.round_name))
-		print("Chips:{}".format(self.my_chips))
-
-		if self.round_name == "Deal":
-			hands = data['self']['cards']
-			for card in hands:
-				self.hands.append(getCard(card))
-			showCard(self.hands)
-			# score = HandEvaluator.evaluate_hand(hands, board)
-
-		if self.round_name == "Flop":
-			boards = data['game']['board']
-			for card in (boards):
-				self.board.append(getCard(card))
-			showCard(self.board)
-			# score = HandEvaluator.evaluate_hand(hands, board)
+		self.updateStage(round_name, data)
 
 		self.min_bet = data['self']['minBet']
+
+	def updateStage(self, stage_name, data):
+		stage = GetStage(stage_name)
+		if stage != self.stage:
+			self.stage = stage
+			# print('[{}]'.format(self.stage))
+			if stage == Stage.PreFlop:
+				hands = data['self']['cards']
+				for card in hands:
+					self.hands.append(getCard(card))
+			elif stage != Stage.HandOver:
+				self.board = []
+				boards = data['game']['board']
+				for card in (boards):
+					self.board.append(getCard(card))
 
 	def endGame(self, data):
 		try:
@@ -138,7 +143,43 @@ class DummyPokerBot(PokerBot):
 
 	def declareAction(self, data, isBet=False):
 		self.initAction(data)
-		print('score:{}'.format(self.score))
-		action = Action.Allin
-		amount = self.min_bet
+		# print("Round: {}".format(round_name))
+		print("My chips:{}".format(self.my_chips))
+
+		if self.stage != Stage.PreFlop and self.stage != Stage.HandOver:
+			self.evaluate()
+
+		amount = 0
+		action = Action.Check
+		if self.percentage >= 0.8:
+			action = Action.Allin
+		elif self.percentage >= 0.6 and self.percentage < 0.8:
+			action = Action.Bet
+			amount = max(self.min_bet, self.my_chips/2)
+		elif self.percentage >= 0.5 and self.percentage < 0.6:
+			if self.min_bet < self.my_chips / 10:
+				action = Action.Raise
+			else:
+				action = Action.Call
+		elif self.percentage >= 0.18 and self.percentage < 0.5:
+			if self.min_bet < self.my_chips / 10:
+				action = Action.Call
+			else:
+				action = Action.Fold
+		else:
+			if self.stage == Stage.PreFlop:
+				action = Action.Call
+			else:
+				action = Action.Fold
+
 		return action, amount
+
+	def evaluate(self):
+		print("Hand card:")
+		showCard(self.hands)
+		print("Board card:")
+		showCard(self.board)
+		rank = self.evaluator.evaluate(self.board, self.hands)
+		self.percentage = 1.0 - self.evaluator.get_five_card_rank_percentage(rank)
+		p_class = self.evaluator.get_rank_class(rank)
+		print("My hand rank = %f (%s)" % (self.percentage, self.evaluator.class_to_string(p_class)))

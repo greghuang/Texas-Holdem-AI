@@ -1,4 +1,4 @@
-from action import Action
+from poker import Action
 from pokerBot import DummyPokerBot
 import websockets
 import json
@@ -22,7 +22,7 @@ class PokerSocket(object):
 		amount = 0
 		if action == "bet" or action == "allin":
 			amount = data['action']['amount'] 
-		print("[Round:{}]".format(round))
+		print("[Stage:{}]".format(round))
 		print("Player:{}".format(player) + " {}".format(action) + " {}\n".format(amount))
 
 	async def evtHandler(self, ws, event, data):
