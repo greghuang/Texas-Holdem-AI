@@ -109,7 +109,10 @@ if __name__ == '__main__':
 
 		# asyncio.ensure_future(myPokerSocket.doListen())
 		loop.run_until_complete(myPokerSocket.doListen())
-		loop.run_forever()	
+		loop.run_forever()
+	except websockets.exceptions.ConnectionClosed:
+		print("Connection close")
+		loop.stop()
 	except Exception:
 		traceback.print_exc()
 		loop.stop()
