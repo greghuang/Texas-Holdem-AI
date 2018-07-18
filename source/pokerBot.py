@@ -12,7 +12,9 @@ def getCard(card):
 
 def showCard(cards):
 	Card.print_pretty_cards(cards)
-	
+# 2018.07.17
+# Total games:40 total chips:130178 avg.chips:3254.0625
+# Total rounds:415, win rounds:100, win rate:0.240964
 class PokerBot(object):
 	def initRound(self, data):
 		err_msg = self.__build_err_msg("init round")
@@ -112,14 +114,15 @@ class DummyPokerBot(PokerBot):
 
 	def endGame(self, data):
 		try:
+			self.total_games += 1
 			players = data['players']
 			for player in (players):
 				name = player['playerName']				
-				if name == self.player_hashed_name:
-					self.total_games += 1
+				if name == self.player_hashed_name:					
 					self.total_chips += player['chips']
-					print('Total games:{}'.format(self.total_games) + ' total chips:{}'.format(self.total_chips) + ' avg.chips:{}'.format(self.total_chips/self.total_games))
-					print("Total rounds:%d, win rounds:%d, win rate:%f" %(self.total_round, self.win_round, float(self.win_round)/float(self.total_round)))
+
+				print('Total games:{}'.format(self.total_games) + ' total chips:{}'.format(self.total_chips) + ' avg.chips:{}'.format(self.total_chips/self.total_games))
+				print("Total rounds:%d, win rounds:%d, win rate:%f" %(self.total_round, self.win_round, float(self.win_round)/float(self.total_round)))
 		except Exception:
 			traceback.print_exc()
 			print(data)
@@ -150,12 +153,15 @@ class DummyPokerBot(PokerBot):
 		# print("Round: {}".format(round_name))
 		print("My chips:{}".format(self.my_chips))
 
+		pre_percent = self.percentage
 		if self.stage != Stage.PreFlop and self.stage != Stage.HandOver:
-			self.evaluate()
+			self.percentage = self.evaluate()
 
 		amount = 0
 		action = Action.Check
-		if self.percentage >= 0.8:
+		isBetter = (self.percentage > pre_percent)
+
+		if self.percentage >= 0.8 and isBetter:
 			action = Action.Allin
 		elif self.percentage >= 0.6 and self.percentage < 0.8:
 			action = Action.Bet
@@ -172,6 +178,7 @@ class DummyPokerBot(PokerBot):
 				action = Action.Fold
 		else:
 			if self.stage == Stage.PreFlop:
+				print('Card 1:{}'.format(self.hands[0])+' Card 2:{}'.format(self.hands[1]))
 				action = Action.Call
 			else:
 				action = Action.Fold
@@ -184,6 +191,7 @@ class DummyPokerBot(PokerBot):
 		print("Board card:")
 		showCard(self.board)
 		rank = self.evaluator.evaluate(self.board, self.hands)
-		self.percentage = 1.0 - self.evaluator.get_five_card_rank_percentage(rank)
+		percentage = 1.0 - self.evaluator.get_five_card_rank_percentage(rank)
 		p_class = self.evaluator.get_rank_class(rank)
-		print("My hand rank = %f (%s)" % (self.percentage, self.evaluator.class_to_string(p_class)))
+		print("My hand rank = %f (%s)" % (percentage, self.evaluator.class_to_string(p_class)))
+		return percentage
