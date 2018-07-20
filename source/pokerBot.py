@@ -20,6 +20,10 @@ class PokerBot(object):
 		err_msg = self.__build_err_msg("init round")
 		raise NotImplementedError(err_msg)
 
+	def showAction(self, data):
+		err_msg = self.__build_err_msg("init round")
+		raise NotImplementedError(err_msg)
+
 	def declareAction(self, data, isBet=False):
 		err_msg = self.__build_err_msg("declare action")
 		raise NotImplementedError(err_msg)
@@ -44,11 +48,13 @@ class DummyPokerBot(PokerBot):
 	min_bet = 0
 	my_call_bet = 0
 	my_raise_bet = 0
+	my_bet_chips = 0
 	table_bet = 0
 	total_bet = 0
 	percentage = 0.0
 	board = []
 	hands = []
+	opponent_action = []
 	stage = None
 	round_name = None
 	player_name = None
@@ -65,12 +71,14 @@ class DummyPokerBot(PokerBot):
 		self.number_players = 0
 		self.my_call_bet = 0
 		self.my_raise_bet = 0
+		self.my_bet_chips = 0
 		self.min_bet = 0
 		self.table_bet = 0
 		self.total_bet = 0
 		self.percentage = 0.0
 		self.board = []
 		self.hands = []
+		self.opponent_action = []
 		self.stage = None
 		self.player_hashed_name = None
 		self.round_name = data['table']['roundName']
@@ -97,6 +105,14 @@ class DummyPokerBot(PokerBot):
 
 		self.min_bet = data['self']['minBet']
 
+	def showAction(self, data):
+		player = data['action']['playerName']
+		action = data['action']['action']
+		amount = 0
+		if action == "bet" or action == "allin":
+			amount = data['action']['amount'] 
+		self.opponent_action.append(action)
+
 	def updateStage(self, stage_name, data):
 		stage = GetStage(stage_name)
 		if stage != self.stage:
@@ -121,8 +137,8 @@ class DummyPokerBot(PokerBot):
 				if name == self.player_hashed_name:					
 					self.total_chips += player['chips']
 
-				print('Total games:{}'.format(self.total_games) + ' total chips:{}'.format(self.total_chips) + ' avg.chips:{}'.format(self.total_chips/self.total_games))
-				print("Total rounds:%d, win rounds:%d, win rate:%f" %(self.total_round, self.win_round, float(self.win_round)/float(self.total_round)))
+			print('Total games:{}'.format(self.total_games) + ' total chips:{}'.format(self.total_chips) + ' avg.chips:{}'.format(self.total_chips/self.total_games))
+			print("Total rounds:%d, win rounds:%d, win rate:%f" %(self.total_round, self.win_round, float(self.win_round)/float(self.total_round)))
 		except Exception:
 			traceback.print_exc()
 			print(data)
@@ -161,29 +177,63 @@ class DummyPokerBot(PokerBot):
 		action = Action.Check
 		isBetter = (self.percentage > pre_percent)
 
-		if self.percentage >= 0.8 and isBetter:
-			action = Action.Allin
-		elif self.percentage >= 0.6 and self.percentage < 0.8:
+		if self.percentage >= 0.9:
+			if isBetter:
+				action = Action.Allin
+			else:
+				action = Action.Raise
+		elif self.percentage >= 0.8 and self.percentage < 0.9:
 			action = Action.Bet
 			amount = max(self.min_bet, self.my_chips/2)
-		elif self.percentage >= 0.5 and self.percentage < 0.6:
-			if self.min_bet < self.my_chips / 10:
+		elif self.percentage >= 0.6 and self.percentage < 0.8:
+			if self.min_bet < (self.my_chips / 3) and isBetter:
 				action = Action.Raise
+			elif "allin" in self.opponent_action:
+				action = Action.Fold
 			else:
 				action = Action.Call
-		elif self.percentage >= 0.18 and self.percentage < 0.5:
-			if self.min_bet < self.my_chips / 10:
+		elif self.percentage >= 0.5 and self.percentage < 0.6:
+			if self.min_bet < (self.my_chips / 5) and self.my_bet_chips < (self.my_chips / 2):
+				action = Action.Call
+			else:
+				action = Action.Fold
+		elif self.percentage >= 0.4 and self.percentage < 0.5:
+			if self.min_bet < (self.my_chips / 10):
+				action = Action.Call
+			else:
+				action = Action.Fold
+		elif self.percentage >= 0.18 and self.percentage < 0.4:
+			if not isBet:
+				action = Action.Check
+			elif self.min_bet < (self.my_chips / 20):
 				action = Action.Call
 			else:
 				action = Action.Fold
 		else:
 			if self.stage == Stage.PreFlop:
-				print('Card 1:{}'.format(self.hands[0])+' Card 2:{}'.format(self.hands[1]))
-				action = Action.Call
+				showCard(self.hands)
+				if "allin" not in self.opponent_action:
+					action = Action.Call
+				else:
+					action = Action.Fold
 			else:
 				action = Action.Fold
 
+		self.updateBetChips(action, amount)
+
 		return action, amount
+
+	def updateBetChips(self, action, amount):
+		if action == Action.Call:
+			self.my_bet_chips += self.min_bet
+		elif action == Action.Raise:
+			self.my_bet_chips += (self.min_bet * 2)
+		elif action == Action.Bet:
+			self.my_bet_chips += amount
+		elif action == Action.Allin:
+			self.my_bet_chips += self.my_chips
+		else:
+			pass
 
 	def evaluate(self):
 		print("Hand card:")

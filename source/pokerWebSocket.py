@@ -16,6 +16,8 @@ class PokerSocket(object):
 		self.connect_url = connect_url
 
 	def showAction(self, data):
+		self.pokerbot.showAction(data)
+		
 		round = data['table']['roundName']
 		player = data['action']['playerName']
 		action = data['action']['action']
@@ -31,7 +33,8 @@ class PokerSocket(object):
 		elif event == "__action" or event == "__bet":
 			action, amount = self.pokerbot.declareAction(data, (event == "__bet"))
 			print("action: {}".format(action))
-			print("action amount: {}\n".format(amount))
+			print("action amount: {}".format(amount))
+			print("Current my bet:{}\n".format(self.pokerbot.my_bet_chips))
 			await ws.send(json.dumps({
 				"eventName": "__action",
 				"data": {
@@ -54,8 +57,11 @@ class PokerSocket(object):
 				print("===== Rejoin game =====")
 				await self.joinGame(ws)
 			else:
-				for task in asyncio.Task.all_tasks():
-					task.cancel()
+				await self.cancelTask()
+
+	async def cancelTask(self):
+		for task in asyncio.Task.all_tasks():
+			task.cancel()
 
 	async def joinGame(self, ws):
 		await ws.send(json.dumps({
@@ -79,6 +85,7 @@ class PokerSocket(object):
 					await self.evtHandler(ws, event_name, data)
 			except asyncio.CancelledError:
 				print("disconnect websocket")
+				# await self.cancelTask()	
 			except asyncio.TimeoutError:
 				print('server timeout')
 				try:
@@ -97,8 +104,10 @@ def ask_exit():
 		task.cancel()
 
 if __name__ == '__main__':
-	playerName = "iamrobot"
-	connectURL = "ws://poker-training.vtr.trendnet.org:3001"
+	playerName = "54a311a2c59c4bdb8b0d3ee2203eb002"
+	connectURL = "ws://poker-battle.vtr.trendnet.org:3001"
+	# playerName = "iamrobot"
+	# connectURL = "ws://poker-training.vtr.trendnet.org:3001"
 	myPokerBot = DummyPokerBot()
 	myPokerSocket = PokerSocket(playerName, connectURL, myPokerBot)
 
