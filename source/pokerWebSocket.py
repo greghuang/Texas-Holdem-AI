@@ -1,5 +1,5 @@
 from poker import Action
-from pokerBot import DummyPokerBot
+from dummyPokerBot import DummyPokerBot
 import websockets
 import json
 import asyncio
