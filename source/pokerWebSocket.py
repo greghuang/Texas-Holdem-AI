@@ -34,7 +34,7 @@ class PokerSocket(object):
 		elif event == "__action" or event == "__bet":
 			action, amount = self.pokerbot.declareAction(data, (event == "__bet"))
 			print("action: {}".format(action))
-			print("action amount: {}".format(amount))
+			print("amount: {}".format(amount))
 			print("Current my bet:{}\n".format(self.pokerbot.my_bet_chips))
 			await ws.send(json.dumps({
 				"eventName": "__action",

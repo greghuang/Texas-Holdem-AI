@@ -16,6 +16,7 @@ class Stage(Enum):
 	Flop = 'Flop'
 	Turn = 'Turn'
 	River = 'River'
+	Showdown = 'Showdown'
 	HandOver = 'HandOver'
 
 def GetStage(stage):
@@ -27,5 +28,7 @@ def GetStage(stage):
 		return Stage.Turn
 	elif stage == 'River':
 		return Stage.River
+	elif stage == 'Showdown':
+		return Stage.Showdown
 	else:
 		return Stage.HandOver

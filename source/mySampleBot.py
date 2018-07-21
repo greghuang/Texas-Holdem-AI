@@ -4,7 +4,6 @@ from poker import Stage
 
 class MySampleBot(DummyPokerBot):
 	def declareAction(self, data, isBet=False):
-		# super(DummyPokerBot, self).initAction(data)
 		self.initAction(data)
 		amount = 0
 		action = Action.Check
@@ -26,6 +25,8 @@ class MySampleBot(DummyPokerBot):
 				print('game over')
 				break
 
+		self.updateBetChips(action, amount)
+		
 		return super(CardCountingBot, self).declareAction(data, isBet)
 
 	def withPreFlop(self, data):

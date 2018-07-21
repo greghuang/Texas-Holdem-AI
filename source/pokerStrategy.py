@@ -60,3 +60,16 @@ if __name__ == '__main__':
  	print("Draw:")
  	drawCard = CardCounting().evaluate(hole, boards, 0.7)
  	Card.print_pretty_cards(drawCard)
+ 	# Hand card:
+	# [J♦],[6♦]
+	# Board card:
+	# [7♣],[3♣],[A♦]
+ 	hole = [getCard('Jd'), getCard('6d')]
+ 	boards = [getCard('7c'), getCard('3c'), getCard('Ad')]
+ 	print("Hole:")
+ 	Card.print_pretty_cards(hole)
+ 	print("Boards:")
+ 	Card.print_pretty_cards(boards)
+ 	print("Draw:")
+ 	drawCard = CardCounting().evaluate(hole, boards, 0.75)
+ 	Card.print_pretty_cards(drawCard)

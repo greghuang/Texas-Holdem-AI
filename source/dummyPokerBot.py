@@ -65,13 +65,13 @@ class DummyPokerBot(pokerBot.PokerBot):
 
 	def initAction(self, data):
 		round_name = data['game']['roundName']
+		self.updateStage(round_name, data)
 		
 		if self.player_hashed_name == None:
 			self.player_hashed_name = data['self']['playerName']
 			print("My name:"+self.player_hashed_name)
 		
 		self.my_chips = data['self']['chips']
-		self.updateStage(round_name, data)
 		self.min_bet = data['self']['minBet']
 		print("My chips:{}".format(self.my_chips))
 
@@ -87,6 +87,7 @@ class DummyPokerBot(pokerBot.PokerBot):
 		self.number_players = survive_players
 
 	def showAction(self, data):
+		self.table_pot = data['table']['totalBet']
 		player = data['action']['playerName']
 		action = data['action']['action']
 		amount = 0
@@ -102,11 +103,22 @@ class DummyPokerBot(pokerBot.PokerBot):
 				hands = data['self']['cards']
 				for card in hands:
 					self.hands.append(getCard(card))
+			elif stage == Stage.Showdown:
+				self.board = []
+				for card in (data['table']['board']):
+					self.board.append(getCard(card))
 			elif stage != Stage.HandOver:
 				self.board = []
 				boards = data['game']['board']
 				for card in (boards):
 					self.board.append(getCard(card))
+
+	def showCard(self, cards):
+		output = " "
+		for card in (cards):
+			output += Card.int_to_pretty_str(getCard(card)) + ","
+
+		return output
 
 	def endGame(self, data):
 		try:
@@ -136,6 +148,10 @@ class DummyPokerBot(pokerBot.PokerBot):
 	def endRound(self, data):
 		try:
 			self.total_round += 1
+			round_name = data['table']['roundName']
+			self.updateStage(round_name, data)
+			Card.print_pretty_cards(self.board)
+
 			players = data['players']
 			for player in (players):
 				name = player['playerName']
@@ -143,19 +159,30 @@ class DummyPokerBot(pokerBot.PokerBot):
 				if isAlive:
 					message = player['hand']['message']
 					if player['winMoney'] > 0:
-						print('{}'.format(name) + ' has {}'.format(message) + ' to win {}'.format(player['winMoney']))
+						print('{} has {} to win {} ({})'.format(name, message, player['winMoney'], self.showCard(player['hand']['cards'])))
 						if name == self.player_hashed_name:
-							self.win_round += 1
+							self.win_round += 1	
 					else:
-						print('{}'.format(name) + ' has {}'.format(message))
+						if name == self.player_hashed_name:
+							print('{} has {} ({})'.format(name, message, self.showCard(player['hand']['cards'])))
+						else:
+							print('{} has {}'.format(name, message))
 				else:
-					print("{}".format(name) + " out")
+					print("{} out".format(name))
 		except Exception:
 			traceback.print_exc()
 			print(data)
 
 	def declareAction(self, data, isBet=False):
 		self.initAction(data)
+		(action, amount) = self.evalStregth(isBet)
+		self.updateBetChips(action, amount)
+
+		return (action, amount)
+
+	def evalStregth(self, isBet = False):
+		action = Action.Check
+		amount = 0
 
 		pre_percent = self.hands_strength
 		if self.stage != Stage.PreFlop and self.stage != Stage.HandOver:
@@ -164,10 +191,7 @@ class DummyPokerBot(pokerBot.PokerBot):
 			print("Board card:")
 			Card.print_pretty_cards(self.board)
 			self.hands_strength = self.winRateStrategy.evaluate(self.hands, self.board)
-			# drawCard = self.cardCounting.evaluate(self.hands, self.board)
 
-		amount = 0
-		action = Action.Check
 		isBetter = (self.hands_strength > pre_percent)
 
 		if self.hands_strength >= 0.9:
@@ -211,8 +235,6 @@ class DummyPokerBot(pokerBot.PokerBot):
 					action = Action.Fold
 			else:
 				action = Action.Fold
-
-		self.updateBetChips(action, amount)
 
 		return (action, amount)
 
