@@ -45,6 +45,8 @@ class CardCountingBot(DummyPokerBot):
 				action = Action.Call
 			else:
 				action = Action.Fold
+		elif self.min_bet > (self.my_chips / 10):
+			action = Action.Fold
 		else:
 			action = Action.Call
 
@@ -73,9 +75,9 @@ class CardCountingBot(DummyPokerBot):
 				action = Action.Fold
 		elif self.hands_strength >= 0.8:
 			action = Action.Raise
-		elif self.hands_strength >= 0.5 and ev > 0:
+		elif self.hands_strength >= 0.55:
 			action = Action.Call
-		elif ev > 60:
+		elif ev > self.my_bet_chips:
 			action = Action.Call
 		else:
 			action = Action.Fold
@@ -108,7 +110,9 @@ class CardCountingBot(DummyPokerBot):
 			action = Action.Raise
 		elif self.hands_strength >= 0.7:
 			action = Action.Call
-		elif self.hands_strength >= 0.5 and ev > 0:
+		elif self.hands_strength >= 0.6:
+			action = Action.Call
+		elif ev > self.my_bet_chips:
 			action = Action.Call
 		elif ev > 0:
 			action = Action.Check
@@ -129,7 +133,7 @@ class CardCountingBot(DummyPokerBot):
 		print("Probability:{:2.2%}, adjusted:{:2.2%}".format(probability, adjust_prob))
 		print("Pot:{}, min bet:{}, my bet:{}".format(self.table_pot, self.min_bet, self.my_bet_chips))
 
-		ev = adjust_prob * (self.table_pot) - (1 - adjust_prob) * (self.min_bet)
+		ev = adjust_prob * (self.table_pot - self.my_bet_chips) - (1 - adjust_prob) * (self.min_bet + self.my_bet_chips)
 		print('EV:{}'.format(ev))
 		return ev
 
