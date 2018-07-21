@@ -45,7 +45,8 @@ class PokerSocket(object):
 				}}))	
 		# when each betting round end up, server will send this event
 		elif event =='__deal':
-			print("Total round bet:{}\n".format(data['table']['totalBet']))
+			self.pokerbot.table_pot = data['table']['totalBet']
+			print("Total round bet:{}\n".format(self.pokerbot.table_pot))
 		elif event == "__show_action":
 			self.showAction(data)
 		elif event == "__round_end":

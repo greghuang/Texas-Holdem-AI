@@ -15,12 +15,12 @@ class DummyPokerBot(pokerBot.PokerBot):
 	bet_count = 0
 	my_chips = 0
 	number_players = 0
+	folded_players = 0
 	min_bet = 0
 	my_call_bet = 0
 	my_raise_bet = 0
 	my_bet_chips = 0
-	table_bet = 0
-	total_bet = 0
+	table_pot = 0 # total bet
 	percentage = 0.0
 	board = []
 	hands = []
@@ -39,12 +39,12 @@ class DummyPokerBot(pokerBot.PokerBot):
 		self.my_chips = 0
 		self.player_name = None
 		self.number_players = 0
+		self.folded_players = 0
 		self.my_call_bet = 0
 		self.my_raise_bet = 0
 		self.my_bet_chips = 0
 		self.min_bet = 0
-		self.table_bet = 0
-		self.total_bet = 0
+		self.table_pot = 0
 		self.percentage = 0.0
 		self.board = []
 		self.hands = []
@@ -74,6 +74,17 @@ class DummyPokerBot(pokerBot.PokerBot):
 		self.updateStage(round_name, data)
 		self.min_bet = data['self']['minBet']
 		print("My chips:{}".format(self.my_chips))
+
+		survive_players = 0
+		folded_players = 0
+		for player in data['game']['players']:
+			if player['isSurvive']:
+				survive_players += 1
+			if player['isSurvive'] and player['folded']:
+				folded_players += 1
+
+		self.folded_players = folded_players
+		self.number_players = survive_players
 
 	def showAction(self, data):
 		player = data['action']['playerName']
@@ -107,13 +118,13 @@ class DummyPokerBot(pokerBot.PokerBot):
 					self.total_chips += player['chips']
 
 			output1 = 'Total games:{:3d}, total chips:{:5d},  avg.chips:{:5.2f}\n'.format(self.total_games, self.total_chips, self.total_chips/self.total_games)
-			output2 = "Total rounds:{:5d}, win rounds:{:4d}, win rate:{:2.2%}\n".format(self.total_round, self.win_round, float(self.win_round)/float(self.total_round))
+			output2 = "Total rounds:{:3d}, win rounds:{:3d}, win rate:{:2.2%}\n".format(self.total_round, self.win_round, float(self.win_round)/float(self.total_round))
 
 			print(output1)
 			print(output2)
 
 			# Save result
-			with open('../data/{}.log'.format(self.player_hashed_name), 'r+') as f:	
+			with open('../data/{}.log'.format(self.player_hashed_name), 'a') as f:	
 				f.write(output1)
 				f.write(output2)
 			
@@ -203,7 +214,7 @@ class DummyPokerBot(pokerBot.PokerBot):
 
 		self.updateBetChips(action, amount)
 
-		return action, amount
+		return (action, amount)
 
 	def updateBetChips(self, action, amount):
 		if action == Action.Call:
