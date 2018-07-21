@@ -106,8 +106,18 @@ class DummyPokerBot(pokerBot.PokerBot):
 				if name == self.player_hashed_name:					
 					self.total_chips += player['chips']
 
-			print('Total games:{}'.format(self.total_games) + ' total chips:{}'.format(self.total_chips) + ' avg.chips:{}'.format(self.total_chips/self.total_games))
-			print("Total rounds:%d, win rounds:%d, win rate:%f" %(self.total_round, self.win_round, float(self.win_round)/float(self.total_round)))
+			output1 = 'Total games:{:3d}, total chips:{:5d},  avg.chips:{:5.2f}\n'.format(self.total_games, self.total_chips, self.total_chips/self.total_games)
+			output2 = "Total rounds:{:5d}, win rounds:{:4d}, win rate:{:2.2%}\n".format(self.total_round, self.win_round, float(self.win_round)/float(self.total_round))
+
+			print(output1)
+			print(output2)
+
+			# Save result
+			with open('../data/{}.log'.format(self.player_hashed_name), 'r+') as f:	
+				f.write(output1)
+				f.write(output2)
+			
+			print('File saved ok({})'.format(f.closed))
 		except Exception:
 			traceback.print_exc()
 			print(data)

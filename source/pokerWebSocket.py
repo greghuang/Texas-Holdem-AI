@@ -1,5 +1,6 @@
 from poker import Action
 from dummyPokerBot import DummyPokerBot
+from cardCountingBot import CardCountingBot
 import websockets
 import json
 import asyncio
@@ -85,7 +86,7 @@ class PokerSocket(object):
 					await self.evtHandler(ws, event_name, data)
 			except asyncio.CancelledError:
 				print("disconnect websocket")
-				await self.cancelTask()
+				# await self.cancelTask()
 			except asyncio.TimeoutError:
 				print('server timeout')
 				try:
@@ -108,7 +109,10 @@ if __name__ == '__main__':
 	# connectURL = "ws://poker-battle.vtr.trendnet.org:3001"
 	playerName = "iamrobot"
 	connectURL = "ws://poker-training.vtr.trendnet.org:3001"
-	myPokerBot = DummyPokerBot()
+	dummyBot = DummyPokerBot()
+	countingBot = CardCountingBot()
+	myPokerBot = countingBot
+
 	myPokerSocket = PokerSocket(playerName, connectURL, myPokerBot)
 
 	loop = asyncio.get_event_loop()
@@ -131,6 +135,6 @@ if __name__ == '__main__':
 		# avoid an exception on BaseEventLoop.__del__
 		for sig in (signal.SIGINT, signal.SIGTERM):
 			loop.remove_signal_handler(sig)
-		
+
 		loop.close()
 		print("The program end up")
