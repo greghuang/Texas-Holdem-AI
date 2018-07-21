@@ -21,7 +21,7 @@ class DummyPokerBot(pokerBot.PokerBot):
 	my_raise_bet = 0
 	my_bet_chips = 0
 	table_pot = 0 # total bet
-	percentage = 0.0
+	hands_strength = 0.0
 	board = []
 	hands = []
 	opponent_action = []
@@ -45,7 +45,7 @@ class DummyPokerBot(pokerBot.PokerBot):
 		self.my_bet_chips = 0
 		self.min_bet = 0
 		self.table_pot = 0
-		self.percentage = 0.0
+		self.hands_strength = 0.0
 		self.board = []
 		self.hands = []
 		self.opponent_action = []
@@ -157,45 +157,45 @@ class DummyPokerBot(pokerBot.PokerBot):
 	def declareAction(self, data, isBet=False):
 		self.initAction(data)
 
-		pre_percent = self.percentage
+		pre_percent = self.hands_strength
 		if self.stage != Stage.PreFlop and self.stage != Stage.HandOver:
 			print("Hand card:")
 			Card.print_pretty_cards(self.hands)
 			print("Board card:")
 			Card.print_pretty_cards(self.board)
-			self.percentage = self.winRateStrategy.evaluate(self.hands, self.board)
+			self.hands_strength = self.winRateStrategy.evaluate(self.hands, self.board)
 			# drawCard = self.cardCounting.evaluate(self.hands, self.board)
 
 		amount = 0
 		action = Action.Check
-		isBetter = (self.percentage > pre_percent)
+		isBetter = (self.hands_strength > pre_percent)
 
-		if self.percentage >= 0.9:
+		if self.hands_strength >= 0.9:
 			if isBetter:
 				action = Action.Allin
 			else:
 				action = Action.Raise
-		elif self.percentage >= 0.8 and self.percentage < 0.9:
+		elif self.hands_strength >= 0.8 and self.hands_strength < 0.9:
 			action = Action.Bet
 			amount = max(self.min_bet, self.my_chips/2)
-		elif self.percentage >= 0.6 and self.percentage < 0.8:
+		elif self.hands_strength >= 0.6 and self.hands_strength < 0.8:
 			if self.min_bet < (self.my_chips / 3) and isBetter:
 				action = Action.Raise
 			elif "allin" in self.opponent_action:
 				action = Action.Fold
 			else:
 				action = Action.Call
-		elif self.percentage >= 0.5 and self.percentage < 0.6:
+		elif self.hands_strength >= 0.5 and self.hands_strength < 0.6:
 			if self.min_bet < (self.my_chips / 5) and self.my_bet_chips < (self.my_chips / 2):
 				action = Action.Call
 			else:
 				action = Action.Fold
-		elif self.percentage >= 0.4 and self.percentage < 0.5:
+		elif self.hands_strength >= 0.4 and self.hands_strength < 0.5:
 			if self.min_bet < (self.my_chips / 10):
 				action = Action.Call
 			else:
 				action = Action.Fold
-		elif self.percentage >= 0.18 and self.percentage < 0.4:
+		elif self.hands_strength >= 0.18 and self.hands_strength < 0.4:
 			if not isBet:
 				action = Action.Check
 			elif self.min_bet < (self.my_chips / 20):
@@ -215,6 +215,7 @@ class DummyPokerBot(pokerBot.PokerBot):
 		self.updateBetChips(action, amount)
 
 		return (action, amount)
+
 
 	def updateBetChips(self, action, amount):
 		if action == Action.Call:
