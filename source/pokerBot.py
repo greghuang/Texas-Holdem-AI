@@ -1,17 +1,16 @@
 # from pokereval.card import Card
 # from pokereval.hand_evaluator import HandEvaluator
 from treys import Card
-from treys import Evaluator
 from poker import Action
 from poker import Stage
 from poker import GetStage
 import sys, traceback
+from pokerStrategy import WinRateStrategy
+from pokerStrategy import CardCounting
 
 def getCard(card):
 	return Card.new(card[0] + card[1].lower())
 
-def showCard(cards):
-	Card.print_pretty_cards(cards)
 # 2018.07.17
 # Total games:40 total chips:130178 avg.chips:3254.0625
 # Total rounds:415, win rounds:100, win rate:0.240964
@@ -59,10 +58,11 @@ class DummyPokerBot(PokerBot):
 	round_name = None
 	player_name = None
 	player_hashed_name = None
-	evaluator = Evaluator()
+	winRateStrategy = WinRateStrategy()
+	cardCounting = CardCounting()
 
 	def initRound(self, data):
-		print("\ninitialize round...\n")
+		print("\ninitialize {} round...\n".format(data['table']['roundCount']))
 		# print(data)
 		self.raise_count = 0
 		self.bet_count = 0
@@ -102,8 +102,8 @@ class DummyPokerBot(PokerBot):
 		
 		self.my_chips = data['self']['chips']
 		self.updateStage(round_name, data)
-
 		self.min_bet = data['self']['minBet']
+		print("My chips:{}".format(self.my_chips))
 
 	def showAction(self, data):
 		player = data['action']['playerName']
@@ -116,8 +116,7 @@ class DummyPokerBot(PokerBot):
 	def updateStage(self, stage_name, data):
 		stage = GetStage(stage_name)
 		if stage != self.stage:
-			self.stage = stage
-			# print('[{}]'.format(self.stage))
+			self.stage = stage			
 			if stage == Stage.PreFlop:
 				hands = data['self']['cards']
 				for card in hands:
@@ -166,12 +165,15 @@ class DummyPokerBot(PokerBot):
 
 	def declareAction(self, data, isBet=False):
 		self.initAction(data)
-		# print("Round: {}".format(round_name))
-		print("My chips:{}".format(self.my_chips))
 
 		pre_percent = self.percentage
 		if self.stage != Stage.PreFlop and self.stage != Stage.HandOver:
-			self.percentage = self.evaluate()
+			print("Hand card:")
+			Card.print_pretty_cards(self.hands)
+			print("Board card:")
+			Card.print_pretty_cards(self.board)
+			self.percentage = self.winRateStrategy.evaluate(self.hands, self.board)
+			# drawCard = self.cardCounting.evaluate(self.hands, self.board)
 
 		amount = 0
 		action = Action.Check
@@ -211,7 +213,7 @@ class DummyPokerBot(PokerBot):
 				action = Action.Fold
 		else:
 			if self.stage == Stage.PreFlop:
-				showCard(self.hands)
+				Card.print_pretty_cards(self.hands)
 				if "allin" not in self.opponent_action:
 					action = Action.Call
 				else:
@@ -234,14 +236,3 @@ class DummyPokerBot(PokerBot):
 			self.my_bet_chips += self.my_chips
 		else:
 			pass
-
-	def evaluate(self):
-		print("Hand card:")
-		showCard(self.hands)
-		print("Board card:")
-		showCard(self.board)
-		rank = self.evaluator.evaluate(self.board, self.hands)
-		percentage = 1.0 - self.evaluator.get_five_card_rank_percentage(rank)
-		p_class = self.evaluator.get_rank_class(rank)
-		print("My hand rank = %f (%s)" % (percentage, self.evaluator.class_to_string(p_class)))
-		return percentage

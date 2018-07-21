@@ -85,7 +85,7 @@ class PokerSocket(object):
 					await self.evtHandler(ws, event_name, data)
 			except asyncio.CancelledError:
 				print("disconnect websocket")
-				# await self.cancelTask()	
+				await self.cancelTask()
 			except asyncio.TimeoutError:
 				print('server timeout')
 				try:
@@ -104,10 +104,10 @@ def ask_exit():
 		task.cancel()
 
 if __name__ == '__main__':
-	playerName = "54a311a2c59c4bdb8b0d3ee2203eb002"
-	connectURL = "ws://poker-battle.vtr.trendnet.org:3001"
-	# playerName = "iamrobot"
-	# connectURL = "ws://poker-training.vtr.trendnet.org:3001"
+	# playerName = "54a311a2c59c4bdb8b0d3ee2203eb002"
+	# connectURL = "ws://poker-battle.vtr.trendnet.org:3001"
+	playerName = "iamrobot"
+	connectURL = "ws://poker-training.vtr.trendnet.org:3001"
 	myPokerBot = DummyPokerBot()
 	myPokerSocket = PokerSocket(playerName, connectURL, myPokerBot)
 
