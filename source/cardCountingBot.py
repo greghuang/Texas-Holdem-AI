@@ -112,7 +112,7 @@ class CardCountingBot(DummyPokerBot):
 			action = Action.Call
 		elif self.hands_strength >= 0.5:
 			action = Action.Call
-		elif ev > self.my_bet_chips:
+		elif ev > self.min_bet:
 			action = Action.Call
 		elif ev > 0:
 			action = Action.Check
