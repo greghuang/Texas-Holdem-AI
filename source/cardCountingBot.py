@@ -1,6 +1,6 @@
 from dummyPokerBot import DummyPokerBot
 from pokerStrategy import CardCounting
-from pokerStrategy import WinRateStrategy
+from pokerStrategy import CardEvaluator
 from switch import switch
 from poker import Stage
 from poker import Action
@@ -8,7 +8,7 @@ from treys import Card
 
 class CardCountingBot(DummyPokerBot):
 	cardCounting = CardCounting()
-	handEvaluator = WinRateStrategy()
+	handEvaluator = CardEvaluator()
 	weightDict = {'1':1, '2':1, '3':1, '4':2, '5':3, '6':3, '7':3, '8':4, '9':4, '10':5 }
 
 	def declareAction(self, data, isBet=False):
@@ -63,7 +63,7 @@ class CardCountingBot(DummyPokerBot):
 		Card.print_pretty_cards(drawCard)
 
 		deal = 52 - len(self.hands) * self.number_players - len(self.board)
-		percentage = float(len(drawCard)) / float(deal)
+		percentage = min(float(len(drawCard)) / float(deal), 1.0)
 		ev = self.evalEV(percentage)
 		
 		if "allin" in self.opponent_action:
@@ -79,7 +79,7 @@ class CardCountingBot(DummyPokerBot):
 			action = Action.Call
 		elif ev > self.my_bet_chips:
 			action = Action.Call
-		else:
+		else:	
 			action = Action.Fold
 
 		return (action, amount)
@@ -91,7 +91,7 @@ class CardCountingBot(DummyPokerBot):
 
 		self.updateHandsStrength(self.hands, self.board)
 
-		drawCard = self.cardCounting.evaluate(self.hands, self.board, 0.7)
+		drawCard = self.cardCounting.evaluate(self.hands, self.board, 0.6)
 		print('Draw Card:')
 		Card.print_pretty_cards(drawCard)
 
@@ -110,7 +110,7 @@ class CardCountingBot(DummyPokerBot):
 			action = Action.Raise
 		elif self.hands_strength >= 0.7:
 			action = Action.Call
-		elif self.hands_strength >= 0.6:
+		elif self.hands_strength >= 0.5:
 			action = Action.Call
 		elif ev > self.my_bet_chips:
 			action = Action.Call
@@ -123,6 +123,7 @@ class CardCountingBot(DummyPokerBot):
 
 	def withRiver(self, data):
 		return super(CardCountingBot, self).evalStregth()
+		
 
 	def evalEV(self, probability):
 		adjust_prob = probability
@@ -133,7 +134,7 @@ class CardCountingBot(DummyPokerBot):
 		print("Probability:{:2.2%}, adjusted:{:2.2%}".format(probability, adjust_prob))
 		print("Pot:{}, min bet:{}, my bet:{}".format(self.table_pot, self.min_bet, self.my_bet_chips))
 
-		ev = adjust_prob * (self.table_pot - self.my_bet_chips) - (1 - adjust_prob) * (self.min_bet + self.my_bet_chips)
+		ev = adjust_prob * (self.table_pot) - (1 - adjust_prob) * (self.min_bet)
 		print('EV:{}'.format(ev))
 		return ev
 

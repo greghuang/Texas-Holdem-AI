@@ -4,7 +4,7 @@ from pokerBot import getCard
 from poker import GetStage
 from poker import Stage
 from poker import Action
-from pokerStrategy import WinRateStrategy
+from pokerStrategy import CardEvaluator
 
 class DummyPokerBot(pokerBot.PokerBot):
 	total_games = 0
@@ -29,7 +29,7 @@ class DummyPokerBot(pokerBot.PokerBot):
 	round_name = None
 	player_name = None
 	player_hashed_name = None
-	winRateStrategy = WinRateStrategy()
+	winRateStrategy = CardEvaluator()
 
 	def initRound(self, data):
 		print("\ninitialize {} round...\n".format(data['table']['roundCount']))
@@ -60,8 +60,8 @@ class DummyPokerBot(pokerBot.PokerBot):
 			print("Is Online:{}".format(player['isOnline']))
 			print("Chips:{}".format(player['chips']))
 			print("\n")
-		print("Big blind:{}".format(data['table']['bigBlind']['amount']))
-		print("Small blind:{}".format(data['table']['smallBlind']['amount']))
+		print("Big blind:{} by {}".format(data['table']['bigBlind']['amount'], data['table']['bigBlind']['playerName']))
+		print("Small blind:{} by {}\n".format(data['table']['smallBlind']['amount'], data['table']['smallBlind']['playerName']))
 
 	def initAction(self, data):
 		round_name = data['game']['roundName']

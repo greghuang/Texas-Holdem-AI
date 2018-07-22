@@ -8,7 +8,7 @@ class PokerStrategy(object):
 		err_msg = self.__build_err_msg("evaluate")
 		raise NotImplementedError(err_msg)
 
-class WinRateStrategy(PokerStrategy):
+class CardEvaluator(PokerStrategy):
 	evaluator = Evaluator()
 	
 	def evaluate(self, hands, boards, showRank = True):		
@@ -19,7 +19,7 @@ class WinRateStrategy(PokerStrategy):
 			print("My hand rank = %f (%s)" % (percentage, self.evaluator.class_to_string(r_class)))
 		return percentage
 
-class CardCounting(WinRateStrategy):
+class CardCounting(CardEvaluator):
 	def evaluate(self, hands, boards, threshold):
 		win_rate = super(CardCounting, self).evaluate(hands, boards, False)
 
