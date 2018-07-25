@@ -1,6 +1,7 @@
 from dummyPokerBot import DummyPokerBot
 from pokerStrategy import CardCounting
 from pokerStrategy import CardEvaluator
+from pokerStrategy import HoleEvaluator
 from switch import switch
 from poker import Stage
 from poker import Action
@@ -9,6 +10,7 @@ from treys import Card
 class CardCountingBot(DummyPokerBot):
 	cardCounting = CardCounting()
 	handEvaluator = CardEvaluator()
+	holeEvaluator = HoleEvaluator()
 	weightDict = {'1':1, '2':1, '3':1, '4':2, '5':3, '6':3, '7':3, '8':4, '9':4, '10':5 }
 
 	def declareAction(self, data, isBet=False):
@@ -40,15 +42,22 @@ class CardCountingBot(DummyPokerBot):
 		action = Action.Check
 
 		Card.print_pretty_cards(self.hands)
-		if "allin" in self.opponent_action:
+		hole_winrate = self.holeEvaluator.evaluate(self.hands, self.board, 0)
+		# print('Hole win rate:{}'.format(hole_winrate))
+		
+		if hole_winrate > 0.5:
+			action = Action.Call
+		elif "allin" in self.opponent_action:
 			if self.min_bet < (self.my_chips / 10):
 				action = Action.Call
 			else:
 				action = Action.Fold
-		elif self.min_bet > (self.my_chips / 10):
-			action = Action.Fold
-		else:
+		elif hole_winrate > 0.31:
 			action = Action.Call
+		elif self.min_bet <= (self.my_chips / 5):
+			action = Action.Call
+		else:
+			action = Action.Fold
 
 		return (action, amount)
 

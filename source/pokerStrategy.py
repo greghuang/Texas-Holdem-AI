@@ -45,6 +45,30 @@ class CardCounting(CardEvaluator):
 		
 		return draw_cards
 
+class HoleEvaluator(CardEvaluator):
+	def evaluate(self, hands, boards, threshold):
+		deck = Deck()
+		draw_cards = []
+		win_rate = 0.0
+
+		for i in range(0, 100):
+			deck.shuffle()
+			j = 0
+			while j < 3:
+				card = deck.draw(1)
+				if card in hands :
+					continue
+				else:
+					boards.append(card)
+					j+=1
+			win_rate += super(HoleEvaluator, self).evaluate(hands, boards, False)
+			boards.clear()
+
+		hole_win_rate = win_rate / float(100)
+		print('hole win rate:{}'.format(hole_win_rate))
+		return hole_win_rate
+
+
 
 if __name__ == '__main__':
 	# Hand card:
@@ -73,3 +97,11 @@ if __name__ == '__main__':
  	print("Draw:")
  	drawCard = CardCounting().evaluate(hole, boards, 0.75)
  	Card.print_pretty_cards(drawCard)
+
+ 	hole = [getCard('Ts'), getCard('Th')]
+ 	pot = []
+ 	HoleEvaluator().evaluate(hole, pot, 0.5)
+
+ 	hole = [getCard('2c'), getCard('2d')]
+ 	pot = []
+ 	HoleEvaluator().evaluate(hole, pot, 0.5)
