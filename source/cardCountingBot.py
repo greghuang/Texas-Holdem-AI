@@ -42,7 +42,7 @@ class CardCountingBot(DummyPokerBot):
 		action = Action.Check
 
 		Card.print_pretty_cards(self.hands)
-		hole_winrate = self.holeEvaluator.evaluate(self.hands, self.board, 0)
+		hole_winrate = self.holeEvaluator.evaluate(self.hands, 3)
 		# print('Hole win rate:{}'.format(hole_winrate))
 		
 		if hole_winrate > 0.5:
