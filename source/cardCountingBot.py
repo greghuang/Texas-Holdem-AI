@@ -42,7 +42,7 @@ class CardCountingBot(DummyPokerBot):
 		action = Action.Check
 
 		Card.print_pretty_cards(self.hands)
-		hole_winrate = self.holeEvaluator.evaluate(self.hands, 3)
+		hole_winrate = self.holeEvaluator.evaluate(self.hands, 3, 100)
 		# print('Hole win rate:{}'.format(hole_winrate))
 		
 		if hole_winrate > 0.5:
@@ -99,6 +99,10 @@ class CardCountingBot(DummyPokerBot):
 		action = Action.Check
 
 		self.updateHandsStrength(self.hands, self.board)
+		
+		isBoardStrong = self.isBoardCardTooStrong(self.hands_strength, 0.4, 0.1)
+		if isBoardStrong:			
+			return (Action.Fold, 0)
 
 		drawCard = self.cardCounting.evaluate(self.hands, self.board, 0.6)
 		print('Draw Card:')
@@ -154,4 +158,11 @@ class CardCountingBot(DummyPokerBot):
 		Card.print_pretty_cards(self.board)
 		self.hands_strength = self.handEvaluator.evaluate(self.hands, self.board)
 
+	def isBoardCardTooStrong(self, hands_str, alpha, beta):
+		board_strength = holeEvaluator.evaluate(self.board, 2, 1000)
+		if hands_str > alpha and abs(board_strength - self.hands_strength) < beta:
+			print('Board strength:{:2.2%}'.format(board_strength))
+			return True
+		else:
+			return False
 

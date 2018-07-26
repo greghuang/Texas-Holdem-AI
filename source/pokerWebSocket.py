@@ -106,10 +106,10 @@ def ask_exit():
 		task.cancel()
 
 if __name__ == '__main__':
-	playerName = "54a311a2c59c4bdb8b0d3ee2203eb002"
-	connectURL = "ws://poker-battle.vtr.trendnet.org:3001"
-	# playerName = "iamrobot"
-	# connectURL = "ws://poker-training.vtr.trendnet.org:3001"
+	# playerName = "54a311a2c59c4bdb8b0d3ee2203eb002"
+	# connectURL = "ws://poker-battle.vtr.trendnet.org:3001"
+	playerName = "iamrobot"
+	connectURL = "ws://poker-training.vtr.trendnet.org:3001"
 	dummyBot = DummyPokerBot()
 	countingBot = CardCountingBot()
 	myPokerBot = countingBot

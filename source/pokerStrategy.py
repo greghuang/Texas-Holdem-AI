@@ -46,16 +46,16 @@ class CardCounting(CardEvaluator):
 		return draw_cards
 
 class HoleEvaluator(CardEvaluator):
-	def evaluate(self, hands, num_card):
+	def evaluate(self, hands, num_draw, count):
 		deck = Deck()
 		draw_cards = []
 		boards = []
 		win_rate = 0.0
 
-		for i in range(0, 100):
+		for i in range(0, count):
 			deck.shuffle()
 			j = 0
-			while j < num_card:
+			while j < num_draw:
 				card = deck.draw(1)
 				if card in hands :
 					continue
