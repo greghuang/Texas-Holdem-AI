@@ -20,6 +20,9 @@ class DummyPokerBot(pokerBot.PokerBot):
 	my_call_bet = 0
 	my_raise_bet = 0
 	my_bet_chips = 0
+	big_blind = 0
+	small_blind = 0
+	player_bb = None
 	table_pot = 0 # total bet
 	hands_strength = 0.0
 	board = []
@@ -28,6 +31,7 @@ class DummyPokerBot(pokerBot.PokerBot):
 	stage = None
 	round_name = None
 	player_name = None
+
 	player_hashed_name = None
 	winRateStrategy = CardEvaluator()
 
@@ -60,8 +64,11 @@ class DummyPokerBot(pokerBot.PokerBot):
 			print("Is Online:{}".format(player['isOnline']))
 			print("Chips:{}".format(player['chips']))
 			print("\n")
-		print("Big blind:{} by {}".format(data['table']['bigBlind']['amount'], data['table']['bigBlind']['playerName']))
-		print("Small blind:{} by {}\n".format(data['table']['smallBlind']['amount'], data['table']['smallBlind']['playerName']))
+		self.big_blind = data['table']['bigBlind']['amount']
+		self.small_blind = data['table']['smallBlind']['amount']
+		self.player_bb = data['table']['bigBlind']['playerName']
+		print("Big blind:{} by {}".format(self.big_blind, self.player_bb))
+		print("Small blind:{} by {}\n".format(self.small_blind, data['table']['smallBlind']['playerName']))
 
 	def initAction(self, data):
 		round_name = data['game']['roundName']
