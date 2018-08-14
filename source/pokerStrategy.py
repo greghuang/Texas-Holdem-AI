@@ -110,12 +110,21 @@ if __name__ == '__main__':
  	# drawCard, rate = CardCounting().evaluate(hole, boards, 0.75)
  	# Card.print_pretty_cards(drawCard)
 
- 	# hole = [getCard('Ts'), getCard('Th')]
- 	# pot = []
- 	# HoleEvaluator().evaluate(hole, 2, 1000)
+ 	hole = [getCard('5s'), getCard('5h')]
+ 	pot = []
+ 	HoleEvaluator().evaluate(hole, 3, 1000)
+
  	drawCard.clear()
  	hole = [getCard('As'), getCard('9c')]
  	boards = [getCard('Qc'), getCard('6c'), getCard('9d'), getCard('6d')]
  	drawCard, rate = CardCounting().evaluate(hole, boards, 0.6)
  	Card.print_pretty_cards(drawCard)
  	print('rate:{:2.2%}'.format(rate))
+
+ 	drawCard.clear()
+ 	hole = [getCard('5d'), getCard('Qc')]
+ 	boards = [getCard('2d'), getCard('Td'), getCard('Kc'), getCard('Jc')]
+ 	drawCard, rate = CardCounting().evaluate(hole, boards, 0.6)
+ 	Card.print_pretty_cards(drawCard)
+ 	print('rate:{:2.2%}'.format(rate))
+
